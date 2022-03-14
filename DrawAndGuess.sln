@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawAndGuess", "DrawAndGuess.csproj", "{EC75AD04-4F11-43F1-9021-E2695BA2AED6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC75AD04-4F11-43F1-9021-E2695BA2AED6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC75AD04-4F11-43F1-9021-E2695BA2AED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC75AD04-4F11-43F1-9021-E2695BA2AED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC75AD04-4F11-43F1-9021-E2695BA2AED6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A181D7BA-3EA0-4E0B-A3DC-CDE8E3E89938}
+	EndGlobalSection
+EndGlobal
