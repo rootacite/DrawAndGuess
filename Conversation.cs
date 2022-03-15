@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -12,21 +15,46 @@ namespace DrawAndGuess
 {
     internal class Conversation
     {
+        protected byte[] RecvedData = null;
+        public delegate void OnBitmapHandler(Bitmap Data);
         readonly byte[] OKReply = new byte[2] { 122, 122 };
-        readonly string IP = "119.49.86.85";
+        readonly string IP = "192.168.3.138";
         readonly short Port = 25535;
         readonly TcpClient Client;
         readonly NetworkStream StreamL;
+        public bool IsMainHost { get; private set; }
+        public event Action OnHosted;
+        public event Action UnHosted;
+        public event OnBitmapHandler OnBitmap;
+
+        protected ManualResetEvent MsgRecved = new ManualResetEvent(false);
+
+        byte[] RecvInsertRange(NetworkStream Stream, int Size)
+        {
+            var  RecvedData = new byte[Size];
+            int RecvedSize = 0;
+
+            do
+            {
+                RecvedSize += Stream.Read(RecvedData, RecvedSize, (int)(Size - RecvedSize));
+            } while (RecvedSize < Size);
+            return RecvedData;
+        }
+
         void PaassiveModole(object ?Param)
         {
             NetworkStream Stream = Client.GetStream();
-            byte[] HeadData = new byte[60];
             while (true)
             {
-                try
-                {
-                    Stream.Read(HeadData, 0, 60);
+                 try
+                 {
+                    byte[] HeadData = RecvInsertRange(Stream, Marshal.SizeOf(typeof(DataHead)));
+
                     DataHead Head = (DataHead)BytesToStuct(HeadData, typeof(DataHead));
+                    if (Head.Rev != 255)
+                    {
+                         MsgRecved.Set(); continue; 
+                    }
                     ConversationType ct = (ConversationType)Head.ct;
                     CommandType cm = (CommandType)Head.cmt;
 
@@ -34,29 +62,59 @@ namespace DrawAndGuess
                     {
                         if (cm == CommandType.Test)
                         {
-                            byte[] Buf = new byte[Head.Length];
-                            Stream.Read(Buf, 0, Buf.Length);
+                            byte[] Buf = RecvInsertRange(Stream, (int)Head.Length);
 
                             MessageBox.Show(Encoding.ASCII.GetString(Buf));
+                        }
 
-                            TransHead(ConversationType.ClientData, CommandType.Test, 2);
-                            Stream.Write(OKReply);
+                        if (cm == CommandType.SetName)
+                        {
+                            byte[] Buf = RecvInsertRange(Stream, (int)Head.Length);
+                            if (Buf[0] == 1)
+                            {
+                                IsMainHost = true;
+                                OnHosted?.Invoke();
+                            }
+                            else
+                            {
+                                IsMainHost = false;
+                                UnHosted?.Invoke();
+                            }
                         }
                     }
                     else if (ct == ConversationType.ServerData)
                     {
-                        if(cm == CommandType.Test)
+                        if (cm == CommandType.Test)
                         {
-                            byte[] Buf = new byte[Head.Length];
-                            Stream.Read(Buf, 0, Buf.Length);
+                            byte[] Buf = RecvInsertRange(Stream, (int)Head.Length);
+                        }
+                        else if (cm == CommandType.BeginData)
+                        {
+                            RecvedData = RecvInsertRange(Stream, (int)Head.Length);
+
+                            if (RecvedData != null && OnBitmap != null)
+                            {
+                                try
+                                {
+                                    var Bp = ImagingMedu.GetBitmap(RecvedData);
+
+                                    OnBitmap?.Invoke(Bp);
+                                }
+                                catch (Exception)
+                                {
+
+                                }
+                            }
 
                         }
-                    }
                 }
-                catch (Exception)
+                }
+                catch (Exception ex)
                 {
+                    MessageBox.Show(ex.Message);
                     break;
                 }
+                MsgRecved.Set();
             }
 
         }
@@ -90,15 +148,32 @@ namespace DrawAndGuess
             Client = new TcpClient();
             Client.Connect(IP, Port);
             StreamL = Client.GetStream();
+            MsgRecved.Reset();
             new Thread(new ParameterizedThreadStart(PaassiveModole)) { IsBackground = true }.Start();
         }
-
+        void WaitForMsg()
+        {
+             MsgRecved.WaitOne();
+            MsgRecved.Reset();
+        }
         public void Test()
         {
             TransHead(ConversationType.ClientCommand, CommandType.Test, 12);
             string VV = "Hello World";
-            StreamL.Write(Encoding.ASCII.GetBytes(VV));
 
+            StreamL.Write(Encoding.ASCII.GetBytes(VV));
+        }
+        public void PublishImg(byte [] Data)
+        {
+            TransHead(ConversationType.ClientCommand, CommandType.EndData, (uint)Data.Length);
+            StreamL.Write(Data);
+        }
+        public void SetName(string Name)
+        {
+            byte [] Data = Encoding.UTF8.GetBytes(Name);
+            TransHead(ConversationType.ClientCommand, CommandType.SetName, (uint)Data.Length);
+
+            StreamL.Write(Data);
         }
         #region Area
         public void TransHead(ConversationType ct, CommandType cm, uint Length)

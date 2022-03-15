@@ -24,7 +24,16 @@
         <Viewbox Stretch="Uniform">
             <Canvas x:Name="CCn" Width="2560" Height="1600">
                 <TextBox x:Name="Id" Canvas.Top="18" Width="700" Height="112" HorizontalAlignment="Center" Canvas.Left="16" VerticalAlignment="Top" AutomationProperties.HelpText="Name" Background="#FFFFE5CB" SelectionOpacity="2" FontSize="72"/>
-                <Image x:Name="Plant" Width="2560" Height="1440" Canvas.Top="160"/>
+                <Image Stretch="Fill" x:Name="Plant" Width="1600" Height="900 " Canvas.Top="423" RenderTransformOrigin="0.5,0.5" Canvas.Left="485">
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="1.6" ScaleY="1.6"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
                 <Button Content="确认" Canvas.Left="737" Canvas.Top="18" Height="112" Width="158" FontSize="48" Click="Button_Click"/>
             </Canvas>
         </Viewbox>
