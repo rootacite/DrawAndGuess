@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DrawAndGuess"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="MainWindow" Height="1000" Width="1600" StylusDown="Window_StylusDown" StylusMove="Window_StylusMove">
+        Title="MainWindow" Height="1000" Width="1600" StylusDown="Window_StylusDown" StylusMove="Window_StylusMove" MouseDown="Window_MouseDown" MouseMove="Window_MouseMove">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -23,7 +23,6 @@
     <Grid>
         <Viewbox Stretch="Uniform">
             <Canvas x:Name="CCn" Width="2560" Height="1600">
-                <TextBox x:Name="Id" Canvas.Top="18" Width="700" Height="112" HorizontalAlignment="Center" Canvas.Left="16" VerticalAlignment="Top" AutomationProperties.HelpText="Name" Background="#FFFFE5CB" SelectionOpacity="2" FontSize="72"/>
                 <Image Stretch="Fill" x:Name="Plant" Width="1600" Height="900 " Canvas.Top="423" RenderTransformOrigin="0.5,0.5" Canvas.Left="485">
                     <Image.RenderTransform>
                         <TransformGroup>
@@ -34,7 +33,10 @@
                         </TransformGroup>
                     </Image.RenderTransform>
                 </Image>
-                <Button Content="确认" Canvas.Left="737" Canvas.Top="18" Height="112" Width="158" FontSize="48" Click="Button_Click"/>
+                <Button Content="确认" Canvas.Left="987" Canvas.Top="18" Height="112" Width="158" FontSize="48" Click="Button_Click" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBox x:Name="Id" Canvas.Top="18" Width="700" Height="112" HorizontalAlignment="Left" Canvas.Left="266" VerticalAlignment="Center" AutomationProperties.HelpText="Name" Background="#FFFFE5CB" SelectionOpacity="2" FontSize="72"/>
+                <TextBlock Canvas.Top="26" Text="名字:" FontSize="72" HorizontalAlignment="Left" Canvas.Left="74" VerticalAlignment="Center"  />
+
             </Canvas>
         </Viewbox>
     </Grid>
